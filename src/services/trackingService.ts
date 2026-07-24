@@ -7,7 +7,7 @@ export class TrackingService {
 
   askOrderId(): BotMessage {
     return {
-      text: "Vui lòng nhập mã đơn hàng cần tra cứu (ví dụ: TSHT-20260723-01)."
+      text: "Vui lòng nhập mã đơn hàng cần theo dõi (ví dụ: TSHT-20260723-01)."
     };
   }
 

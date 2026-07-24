@@ -13,6 +13,7 @@ export interface AppConfig {
   telegram: {
     botToken: string;
     chatId: string;
+    botUsername: string;
   };
 }
 
@@ -25,7 +26,9 @@ export const config: AppConfig = {
     appSecret: process.env.ZALO_APP_SECRET ?? ""
   },
   telegram: {
-    botToken: process.env.ADMIN_TELEGRAM_BOT_TOKEN ?? "",
-    chatId: process.env.ADMIN_TELEGRAM_CHAT_ID ?? ""
+    botToken:
+      process.env.TELEGRAM_BOT_TOKEN?.trim() || process.env.ADMIN_TELEGRAM_BOT_TOKEN?.trim() || "",
+    chatId: process.env.ADMIN_TELEGRAM_CHAT_ID ?? "",
+    botUsername: process.env.TELEGRAM_BOT_USERNAME ?? ""
   }
 };

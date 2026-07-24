@@ -47,7 +47,7 @@ export interface Order {
   unit: string;
   address: string;
   deliveryInfo: DeliveryInfo;
-  status: "NEW" | "DELIVERING" | "DELIVERED";
+  status: "NEW" | "PROCESSING" | "DELIVERING" | "DELIVERED";
   createdAt: string;
 }
 
