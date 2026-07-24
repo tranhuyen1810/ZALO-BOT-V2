@@ -90,18 +90,53 @@ export class OrderService {
       }
 
       session.draft.address = address;
-      const order = this.createOrder(session);
-      session.step = "IDLE";
-      session.draft = {};
-
+      session.step = "ORDER_CONFIRM";
       return {
         text:
-          `Đã tạo đơn hàng thành công: ${order.orderId}\n` +
-          `Sản phẩm: ${order.product}\n` +
-          `Số lượng: ${order.quantity} ${order.unit}\n` +
-          `Địa chỉ: ${order.address}\n` +
-          "Phòng Kinh doanh sẽ liên hệ xác nhận trong ít phút.",
-        quickReplies: mainMenuButtons
+          "Vui lòng kiểm tra lại thông tin đơn hàng và xác nhận:
+" +
+          `Sản phẩm: ${session.draft.product}\n` +
+          `Số lượng: ${session.draft.quantity} ${session.draft.unit}\n` +
+          `SĐT: ${session.draft.phone}\n` +
+          `Địa chỉ: ${session.draft.address}\n\n` +
+          "Chọn 'Xác nhận đặt hàng' để hoàn thành hoặc 'Hủy đơn' để bỏ qua.",
+        quickReplies: [
+          { id: "order_confirm", title: "Xác nhận đặt hàng" },
+          { id: "order_cancel", title: "Hủy đơn" }
+        ]
+      };
+    }
+
+    if (session.step === "ORDER_CONFIRM") {
+      const normalized = normalizeInput(text);
+      if (normalized.includes("xác nhận") || normalized.includes("confirm") || normalized === "1") {
+        const order = this.createOrder(session);
+        session.step = "IDLE";
+        session.draft = {};
+
+        return {
+          text:
+            `Đã tạo đơn hàng thành công: ${order.orderId}\n` +
+            `Sản phẩm: ${order.product}\n` +
+            `Số lượng: ${order.quantity} ${order.unit}\n` +
+            `Địa chỉ: ${order.address}\n` +
+            "Phòng Kinh doanh sẽ liên hệ xác nhận trong ít phút.",
+          quickReplies: mainMenuButtons
+        };
+      }
+
+      if (normalized.includes("hủy") || normalized.includes("cancel") || normalized === "2") {
+        session.step = "IDLE";
+        session.draft = {};
+        return { text: "Đã hủy đơn hàng. Vui lòng chọn dịch vụ khác.", quickReplies: mainMenuButtons };
+      }
+
+      return {
+        text: "Vui lòng chọn Xác nhận đặt hàng hoặc Hủy đơn.",
+        quickReplies: [
+          { id: "order_confirm", title: "Xác nhận đặt hàng" },
+          { id: "order_cancel", title: "Hủy đơn" }
+        ]
       };
     }
 

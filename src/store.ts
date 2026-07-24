@@ -11,6 +11,7 @@ export type SessionStep =
   | "ORDER_UNIT"
   | "ORDER_PHONE"
   | "ORDER_ADDRESS"
+  | "ORDER_CONFIRM"
   | "CREDIT_MENU"
   | "CREDIT_PHONE"
   | "TRACKING_ORDER_ID";
