@@ -217,6 +217,25 @@
         </div>
       </section>
 
+      <aside class="note-box" style="padding:18px 20px;">
+        <h3>Danh muc san pham dat hang</h3>
+        <p>Xi Mang PCB30</p>
+        <p>Xi Mang PCB40</p>
+        <p>Xi Mang Xay Trat</p>
+        <p>Gach khong nung</p>
+      </aside>
+
+      <template id="orderFormTemplate">
+        <div class="order-form-card" style="padding:12px;border:1px solid #e8e8e8;border-radius:12px;background:#fff;">
+          <p class="order-title">Chon san pham va nhap so luong</p>
+          <div id="orderRows"></div>
+          <button id="addProductBtn" class="mini-btn" type="button">+ Them san pham</button>
+          <div class="form-actions" style="margin-top:12px;">
+            <button id="submitOrderBtn" class="primary-btn" type="button">Xac nhan dat hang</button>
+          </div>
+        </div>
+      </template>
+
       <section id="messages" class="messages"></section>
 
       <form id="composer" class="composer">
@@ -275,6 +294,107 @@
       document.getElementById("orderButton").addEventListener("click", () => sendMessage("đặt hàng"));
       document.getElementById("creditButton").addEventListener("click", () => sendMessage("tư vấn sỉ"));
       document.getElementById("trackingButton").addEventListener("click", () => sendMessage("theo dõi vận chuyển"));
+
+      // Render order form from template when user clicks orderButton (also accessible from quick replies)
+      const orderButton = document.getElementById("orderButton");
+      const template = document.getElementById("orderFormTemplate");
+      let orderForm = null;
+
+      function createOrderRow(products) {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.gap = '8px';
+        row.style.marginBottom = '8px';
+
+        const select = document.createElement('select');
+        products.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.name;
+          opt.textContent = p.name;
+          select.appendChild(opt);
+        });
+
+        const qty = document.createElement('input');
+        qty.type = 'number';
+        qty.min = '1';
+        qty.placeholder = 'Số lượng';
+        qty.style.width = '100px';
+
+        const unit = document.createElement('select');
+        ['bao','tấn','viên'].forEach(u => {
+          const o = document.createElement('option'); o.value = u; o.textContent = u; unit.appendChild(o);
+        });
+
+        const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'X';
+        remove.addEventListener('click', () => row.remove());
+
+        row.appendChild(select);
+        row.appendChild(qty);
+        row.appendChild(unit);
+        row.appendChild(remove);
+        return row;
+      }
+
+      async function openOrderForm() {
+        if (orderForm) return; // already open
+        const clone = template.content.cloneNode(true);
+        orderForm = clone.querySelector('.order-form-card');
+        const orderRows = orderForm.querySelector('#orderRows');
+        const addBtn = orderForm.querySelector('#addProductBtn');
+        const submitBtn = orderForm.querySelector('#submitOrderBtn');
+
+        // load products from server
+        const resp = await fetch('/api/chat/message', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ userId: 'demo-user', userName: 'Khách Demo', text: 'menu' })});
+        const data = await resp.json();
+        // fallback products
+        const products = [
+          { name: 'Xi Mang PCB30' },
+          { name: 'Xi Mang PCB40' },
+          { name: 'Xi Mang Xay Trat' },
+          { name: 'Gach khong nung' }
+        ];
+
+        orderRows.appendChild(createOrderRow(products));
+
+        addBtn.addEventListener('click', () => {
+          orderRows.appendChild(createOrderRow(products));
+        });
+
+        submitBtn.addEventListener('click', async () => {
+          const rows = Array.from(orderRows.children);
+          const items = rows.map(r => {
+            const s = r.querySelector('select');
+            const q = r.querySelector('input');
+            const u = r.querySelectorAll('select')[1];
+            return { product: s.value, quantity: Number(q.value || 0), unit: u.value };
+          }).filter(it => it.quantity > 0);
+
+          if (!items.length) {
+            alert('Vui lòng nhập ít nhất 1 sản phẩm hợp lệ.');
+            return;
+          }
+
+          const phone = prompt('Nhập số điện thoại liên hệ (bắt đầu 0):');
+          const address = prompt('Nhập địa chỉ nhận hàng:');
+
+          const result = await fetch('/api/order', {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ userId: 'web-user', userName: 'Khách Web', items, phone, address })
+          });
+
+          const json = await result.json();
+          appendMessage(json.text || 'Đã gửi đơn.', 'bot');
+          // close form
+          orderForm.remove(); orderForm = null;
+        });
+
+        messages.prepend(orderForm);
+      }
+
+      orderButton.addEventListener('click', () => {
+        // open visual order form
+        openOrderForm().catch(console.error);
+      });
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();

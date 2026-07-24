@@ -5,6 +5,8 @@ import { config } from "./config";
 import { MessageHandler } from "./zalo/handler";
 import { ZaloClient } from "./zalo/client";
 import { TelegramAdapter } from "./telegram/adapter";
+import { JsonStore } from "./store";
+import { OrderService } from "./services/orderService";
 
 const app = express();
 const handler = new MessageHandler();
@@ -50,6 +52,36 @@ app.post("/api/chat/message", (req: Request, res: Response) => {
   });
 
   res.json(response);
+});
+
+app.post("/api/order", (req: Request, res: Response) => {
+  const { userId, userName, items, phone, address } = req.body as {
+    userId?: string;
+    userName?: string;
+    items?: Array<{ product: string; quantity: number; unit: string }>;
+    phone?: string;
+    address?: string;
+  };
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    res.status(400).json({ error: "items required" });
+    return;
+  }
+
+  const store = new JsonStore();
+  const orderService = new OrderService(store);
+  const order = orderService.createOrderFromPayload({
+    userId: userId?.trim() || "web-user",
+    userName: userName?.trim() || "Khách Web",
+    items,
+    phone: phone ?? "",
+    address: address ?? ""
+  });
+
+  res.json({
+    text:
+      `Đã tạo đơn hàng thành công: ${order.orderId}\nSản phẩm: ${order.product}\nĐịa chỉ: ${order.address}`
+  });
 });
 
 app.get("/", (_req: Request, res: Response) => {

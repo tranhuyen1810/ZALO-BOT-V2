@@ -221,4 +221,44 @@ export class OrderService {
     this.store.saveOrders(orders);
     return order;
   }
+
+  createOrderFromPayload(payload: {
+    userId: string;
+    userName: string;
+    items: Array<{ product: string; quantity: number; unit: string }>;
+    phone: string;
+    address: string;
+  }): Order {
+    const orders = this.store.readOrders();
+    const next = orders.length + 1;
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const orderId = `TSHT-${datePart}-${String(next).padStart(2, "0")}`;
+
+    const productDesc = payload.items.map((i) => `${i.product} (${i.quantity} ${i.unit})`).join("; ");
+    const totalQuantity = payload.items.reduce((s, it) => s + Number(it.quantity || 0), 0);
+
+    const order: Order = {
+      orderId,
+      customerZaloId: payload.userId,
+      customerName: payload.userName,
+      phone: String(payload.phone),
+      product: productDesc,
+      quantity: totalQuantity,
+      unit: payload.items.length === 1 ? String(payload.items[0].unit) : "nhiều",
+      address: String(payload.address),
+      deliveryInfo: {
+        vehicleType: "Xe cẩu",
+        licensePlate: "29C-123.45",
+        driverName: "Nguyễn Văn B",
+        driverPhone: "0912345678",
+        estimatedArrival: nowIso()
+      },
+      status: "NEW",
+      createdAt: nowIso()
+    };
+
+    orders.push(order);
+    this.store.saveOrders(orders);
+    return order;
+  }
 }

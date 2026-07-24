@@ -21,7 +21,7 @@ export interface SessionState {
   userId: string;
   userName: string;
   step: SessionStep;
-  draft: Record<string, string | number>;
+  draft: Record<string, any>;
   updatedAt: string;
 }
 
