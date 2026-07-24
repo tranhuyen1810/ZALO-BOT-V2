@@ -93,8 +93,7 @@ export class OrderService {
       session.step = "ORDER_CONFIRM";
       return {
         text:
-          "Vui lòng kiểm tra lại thông tin đơn hàng và xác nhận:
-" +
+          `Vui lòng kiểm tra lại thông tin đơn hàng và xác nhận:\n` +
           `Sản phẩm: ${session.draft.product}\n` +
           `Số lượng: ${session.draft.quantity} ${session.draft.unit}\n` +
           `SĐT: ${session.draft.phone}\n` +
