@@ -8,11 +8,7 @@
 
 <video src="document/Thu%20Jul%2023%202026%2016_49_46.mp4" controls width="960"></video>
 
-## Logo chatbot
 
-![Logo Công ty](document/images.jpg)
-
-Tên công ty hiển thị trong chatbot: **Công ty Cổ phần xi măng tiên Sơn Hà Tây**.
 
 ## 1. Mục tiêu
 
