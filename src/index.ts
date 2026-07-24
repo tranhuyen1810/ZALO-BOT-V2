@@ -53,6 +53,5 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.listen(config.port, () => {
-  // eslint-disable-next-line no-console
   console.log(`Zalo Bot server is running at http://localhost:${config.port}`);
 });
