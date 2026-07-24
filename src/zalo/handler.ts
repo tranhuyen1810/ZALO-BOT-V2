@@ -16,13 +16,15 @@ export class MessageHandler {
     const session = this.store.getSession(message.user.id, message.user.name);
     const normalized = normalizeInput(message.text);
 
-    if (!normalized || ["start", "bắt đầu", "menu", "hi", "hello"].includes(normalized)) {
+    if (!normalized || ["start", "bắt đầu", "menu", "hi", "hello", "/start", "/help"].includes(normalized)) {
       session.step = "IDLE";
       session.draft = {};
       this.store.saveSession(session);
+      const helpText = normalized === "/help"
+        ? "Hướng dẫn sử dụng:\n• Gõ /start để bắt đầu hội thoại\n• Gõ 'đặt hàng' để tạo đơn hàng\n• Gõ 'tư vấn' để liên hệ tư vấn sỉ\n• Gõ 'theo dõi vận chuyển' để kiểm tra trạng thái đơn hàng"
+        : "Chào mừng quý khách đến với Công ty CP Xi Măng Tiên Sơn Hà Tây! Vui lòng chọn dịch vụ bên dưới.";
       return {
-        text:
-          "Chào mừng quý khách đến với Công ty CP Xi Măng Tiên Sơn Hà Tây! Vui lòng chọn dịch vụ bên dưới.",
+        text: helpText,
         quickReplies: mainMenuButtons
       };
     }
@@ -44,7 +46,12 @@ export class MessageHandler {
       return response;
     }
 
-    if (normalized.includes("tra cứu") || normalized.includes("tracking") || normalized === "3") {
+    if (
+      normalized.includes("theo dõi") ||
+      normalized.includes("tra cứu") ||
+      normalized.includes("tracking") ||
+      normalized === "3"
+    ) {
       session.step = "TRACKING_ORDER_ID";
       const response = this.trackingService.askOrderId();
       this.store.saveSession(session);

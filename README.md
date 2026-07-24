@@ -8,17 +8,15 @@
 
 <video src="document/Thu%20Jul%2023%202026%2016_49_46.mp4" controls width="960"></video>
 
-
-
 ## 1. Mục tiêu
 
 Dựa trên tài liệu đặc tả, hệ thống đã được phân tích, thiết kế và xây dựng hoàn chỉnh theo các nhóm chức năng:
 
 - Đặt hàng nhanh.
 - Tư vấn sỉ và chính sách công nợ.
-- Tra cứu vận chuyển.
+- Theo dõi vận chuyển.
 - Lưu dữ liệu thật bằng JSON file.
-- Cung cấp giao diện web demo để kiểm thử luồng hội thoại.
+- Cung cấp giao diện web demo và kết nối Telegram Bot để kiểm thử luồng hội thoại.
 
 ## 2. Quy trình thực hiện
 
@@ -99,6 +97,7 @@ Kết nối dữ liệu được thực hiện qua `src/store.ts`:
 - `POST /webhook/zalo`: endpoint nhận webhook tin nhắn Zalo.
 - `POST /api/chat/message`: endpoint chat demo nội bộ.
 - `GET /`: giao diện chatbot demo.
+- Telegram Bot: nhận tin nhắn từ Telegram, chuyển qua cùng lớp xử lý chatbot và trả lời đúng tài khoản người dùng.
 
 Ví dụ payload chat demo:
 
@@ -133,11 +132,26 @@ Luồng xử lý: Chọn sản phẩm -> Số lượng -> Đơn vị -> SĐT -> 
 
 Sau lựa chọn, bot thu thập SĐT và ghi nhận yêu cầu vào `credit_requests.json`.
 
-### 7.3 Tra cứu vận chuyển
+### 7.3 Theo dõi vận chuyển
 
-Bot nhận mã đơn hàng và trả về trạng thái cùng thông tin xe/tài xế.
+Bot nhận mã đơn hàng và trả về trạng thái cùng thông tin xe/tài xế. Người dùng có thể nhập `theo dõi vận chuyển` hoặc `tra cứu vận chuyển`.
 
 ## 8. Chạy demo thử (quan trọng)
+
+### 8.0 Cấu hình Telegram Bot Token
+
+1. Tạo bot trên Telegram bằng BotFather.
+2. Sao chép token và lưu vào file `.env`:
+
+```env
+PORT=3000
+COMPANY_NAME="CÔNG TY CP XI MĂNG TIÊN SƠN HÀ TÂY"
+ADMIN_TELEGRAM_BOT_TOKEN=your_bot_token_here
+ADMIN_TELEGRAM_CHAT_ID=-1001234567890
+TELEGRAM_BOT_USERNAME=XiMangAIbot
+```
+
+3. Khởi động ứng dụng và tìm kiếm bot trên Telegram bằng username đã cấu hình.
 
 ### 8.1 Yêu cầu môi trường
 
@@ -159,6 +173,13 @@ Mở trình duyệt:
 
 - `http://localhost:3000`
 
+Đối với Telegram, sau khi bot khởi động, người dùng có thể:
+
+1. Tìm bot bằng tên `@XiMangAIbot`.
+2. Nhấn nút `Start`.
+3. Gửi câu hỏi như `menu`, `đặt hàng`, `tư vấn`, `theo dõi vận chuyển`.
+4. Nhận phản hồi tự động từ cùng lớp xử lý chatbot hiện tại.
+
 ### 8.3 Chạy ở chế độ production
 
 ```bash
@@ -169,9 +190,10 @@ npm start
 ## 9. Kịch bản demo nhanh
 
 1. Gõ `menu` để mở menu chính.
-2. Chọn `📝 Đặt hàng`, nhập lần lượt thông tin theo hướng dẫn.
+2. Chọn `📝 Đặt hàng`, nhập tên sản phẩm, số lượng, đơn vị, SĐT và địa chỉ công trình.
 3. Gõ `menu` -> chọn `🤝 Tư vấn Sỉ & Công nợ` -> chọn 1/2/3 -> nhập SĐT.
-4. Gõ `menu` -> chọn `🚚 Tra cứu vận chuyển` -> nhập mã `TSHT-20260723-01`.
+4. Gõ `menu` -> chọn `🚚 Theo dõi vận chuyển` -> nhập mã `TSHT-20260723-01`.
+5. Trên Telegram, gửi `/start`, sau đó đặt câu hỏi như `đặt hàng` hoặc `theo dõi vận chuyển`.
 
 ## 10. Quy tắc chất lượng đã áp dụng
 

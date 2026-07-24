@@ -25,9 +25,19 @@ describe("MessageHandler", () => {
 
   it("can query tracking for sample order", () => {
     const handler = new MessageHandler();
-    handler.handle({ user: { id: "test-user-3", name: "Test" }, text: "tra cứu vận chuyển" });
+    handler.handle({ user: { id: "test-user-3", name: "Test" }, text: "theo dõi vận chuyển" });
     const response = handler.handle({ user: { id: "test-user-3", name: "Test" }, text: "TSHT-20260723-01" });
 
     expect(response.text).toContain("TSHT-20260723-01");
+  });
+
+  it("handles telegram-style commands", () => {
+    const handler = new MessageHandler();
+    const startResponse = handler.handle({ user: { id: "test-user-4", name: "Test" }, text: "/start" });
+    const helpResponse = handler.handle({ user: { id: "test-user-4", name: "Test" }, text: "/help" });
+
+    expect(startResponse.text).toContain("Chào mừng");
+    expect(helpResponse.text).toContain("đặt hàng");
+    expect(helpResponse.text).toContain("theo dõi vận chuyển");
   });
 });
