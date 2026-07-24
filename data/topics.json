@@ -1,0 +1,6 @@
+{
+  "mainMenu": ["Đặt hàng", "Tư vấn sỉ & công nợ", "Tra cứu vận chuyển"],
+  "order": ["Sản phẩm", "Số lượng", "Đơn vị", "SĐT", "Địa chỉ"],
+  "credit": ["Đăng ký đại lý", "Chính sách công nợ", "Gặp chuyên viên"],
+  "tracking": ["Mã đơn hàng", "Trạng thái", "Xe giao hàng"]
+}

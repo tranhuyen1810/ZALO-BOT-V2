@@ -1,0 +1,21 @@
+[
+  {
+    "orderId": "TSHT-20260723-01",
+    "customerZaloId": "85043190123",
+    "customerName": "Nguyễn Văn A",
+    "phone": "0987654321",
+    "product": "Xi Măng PCB40 Tiên Sơn Hà Tây",
+    "quantity": 200,
+    "unit": "bao",
+    "address": "Công trình phường Đông Hải, TP. Ninh Bình",
+    "deliveryInfo": {
+      "vehicleType": "Xe cẩu",
+      "licensePlate": "29C-123.45",
+      "driverName": "Nguyễn Văn B",
+      "driverPhone": "0912345678",
+      "estimatedArrival": "2026-07-23T16:30:00Z"
+    },
+    "status": "DELIVERING",
+    "createdAt": "2026-07-23T15:30:00Z"
+  }
+]

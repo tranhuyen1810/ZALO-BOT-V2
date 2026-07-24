@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zalo Bot Tiên Sơn Hà Tây</title>
+    <style>
+      :root {
+        --brand-1: #a72608;
+        --brand-2: #d8572a;
+        --ink: #1f2937;
+        --paper: #fffaf4;
+        --muted: #6b7280;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top right, #ffe8d6 0%, var(--paper) 45%, #f6f3ee 100%);
+        display: grid;
+        place-items: center;
+        padding: 20px;
+      }
+
+      .chat {
+        width: min(900px, 100%);
+        min-height: 80vh;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #f5d4c1;
+        border-radius: 24px;
+        box-shadow: 0 24px 50px rgba(167, 38, 8, 0.15);
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        overflow: hidden;
+      }
+
+      .chat-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: linear-gradient(120deg, var(--brand-1), var(--brand-2));
+        color: #fff;
+      }
+
+      .chat-header img {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+      }
+
+      .chat-header h1 {
+        margin: 0;
+        font-size: clamp(1rem, 2.5vw, 1.4rem);
+      }
+
+      .chat-header p {
+        margin: 2px 0 0;
+        opacity: 0.92;
+      }
+
+      .messages {
+        padding: 18px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .bubble {
+        max-width: 80%;
+        padding: 12px 14px;
+        border-radius: 14px;
+        line-height: 1.45;
+        white-space: pre-line;
+      }
+
+      .user {
+        align-self: flex-end;
+        background: #eceff4;
+      }
+
+      .bot {
+        align-self: flex-start;
+        background: #fff5ef;
+        border: 1px solid #ffd7bf;
+      }
+
+      .quick {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .quick button {
+        border: 1px solid var(--brand-2);
+        background: #fff;
+        color: var(--brand-1);
+        padding: 8px 10px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .composer {
+        padding: 14px;
+        border-top: 1px solid #f3ece7;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+      }
+
+      input,
+      button.send {
+        font: inherit;
+      }
+
+      input {
+        border: 1px solid #d2d6db;
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      button.send {
+        border: none;
+        border-radius: 12px;
+        background: var(--brand-1);
+        color: #fff;
+        padding: 12px 16px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 640px) {
+        .chat {
+          min-height: 90vh;
+        }
+
+        .bubble {
+          max-width: 92%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="chat">
+      <header class="chat-header">
+        <img src="/logo.jpg" alt="Logo công ty" />
+        <div>
+          <h1>Công ty Cổ phần xi măng tiên Sơn Hà Tây</h1>
+          <p>Trợ lý đặt hàng, tư vấn sỉ và công nợ 24/7</p>
+        </div>
+      </header>
+
+      <section id="messages" class="messages"></section>
+
+      <form id="composer" class="composer">
+        <input id="input" placeholder="Nhập nội dung (ví dụ: menu)" autocomplete="off" />
+        <button class="send" type="submit">Gửi</button>
+      </form>
+    </main>
+
+    <script>
+      const messages = document.getElementById("messages");
+      const form = document.getElementById("composer");
+      const input = document.getElementById("input");
+
+      function appendMessage(text, who, quickReplies = []) {
+        const container = document.createElement("div");
+        const bubble = document.createElement("div");
+        bubble.className = `bubble ${who}`;
+        bubble.textContent = text;
+        container.appendChild(bubble);
+
+        if (who === "bot" && quickReplies.length) {
+          const quick = document.createElement("div");
+          quick.className = "quick";
+          quickReplies.forEach((item) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = item.title;
+            btn.addEventListener("click", () => sendMessage(item.title));
+            quick.appendChild(btn);
+          });
+          container.appendChild(quick);
+        }
+
+        messages.appendChild(container);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      async function sendMessage(text) {
+        if (!text.trim()) {
+          return;
+        }
+
+        appendMessage(text, "user");
+
+        const response = await fetch("/api/chat/message", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: "demo-user", userName: "Khách Demo", text })
+        });
+
+        const data = await response.json();
+        appendMessage(data.text, "bot", data.quickReplies || []);
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const value = input.value;
+        input.value = "";
+        sendMessage(value);
+      });
+
+      sendMessage("menu");
+    </script>
+  </body>
+</html>
