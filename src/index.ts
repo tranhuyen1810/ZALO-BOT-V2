@@ -7,6 +7,7 @@ import { ZaloClient } from "./zalo/client";
 import { TelegramAdapter } from "./telegram/adapter";
 import { JsonStore } from "./store";
 import { OrderService } from "./services/orderService";
+import TelegramBot from "node-telegram-bot-api";
 
 const app = express();
 const handler = new MessageHandler();
@@ -77,6 +78,18 @@ app.post("/api/order", (req: Request, res: Response) => {
     phone: phone ?? "",
     address: address ?? ""
   });
+  // Try to notify admin Telegram chat if token and chat id provided and token looks set
+  try {
+    const token = config.telegram.botToken || "";
+    const chatId = config.telegram.chatId || "";
+    if (token && !token.includes("your_") && chatId) {
+      const bot = new TelegramBot(token, { polling: false });
+      const msg = `Đơn hàng mới: ${order.orderId}\n${order.product}\nSĐT: ${order.phone}\nĐịa chỉ: ${order.address}`;
+      bot.sendMessage(chatId, msg).catch(() => {});
+    }
+  } catch (err) {
+    // ignore
+  }
 
   res.json({
     text:

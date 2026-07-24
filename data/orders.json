@@ -17,5 +17,24 @@
     },
     "status": "DELIVERING",
     "createdAt": "2026-07-23T15:30:00Z"
+  },
+  {
+    "orderId": "TSHT-20260724-02",
+    "customerZaloId": "web-user",
+    "customerName": "Khách Web",
+    "phone": "0789564123",
+    "product": "Xi Mang PCB40 (1000 bao); Xi Mang PCB30 (1000 bao); Xi Mang PCB30 (12 bao)",
+    "quantity": 2012,
+    "unit": "nhiều",
+    "address": "",
+    "deliveryInfo": {
+      "vehicleType": "Xe cẩu",
+      "licensePlate": "29C-123.45",
+      "driverName": "Nguyễn Văn B",
+      "driverPhone": "0912345678",
+      "estimatedArrival": "2026-07-24T09:47:13.157Z"
+    },
+    "status": "NEW",
+    "createdAt": "2026-07-24T09:47:13.157Z"
   }
 ]

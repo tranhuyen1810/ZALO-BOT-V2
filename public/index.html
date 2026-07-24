@@ -207,8 +207,6 @@
       </header>
 
       <section class="hero">
-        <h2>Telegram & Web demo</h2>
-        <p>Tìm kiếm bot trên Telegram với tên @XiMangAIbot, nhấn Start và gửi câu hỏi trực tiếp. Bạn cũng có thể thử trên giao diện web demo này.</p>
         <div class="fixed-actions">
           <button type="button" id="startButton">Start</button>
           <button type="button" id="orderButton">📝 Đặt hàng</button>
@@ -217,21 +215,15 @@
         </div>
       </section>
 
-      <aside class="note-box" style="padding:18px 20px;">
-        <h3>Danh muc san pham dat hang</h3>
-        <p>Xi Mang PCB30</p>
-        <p>Xi Mang PCB40</p>
-        <p>Xi Mang Xay Trat</p>
-        <p>Gach khong nung</p>
-      </aside>
+    
 
       <template id="orderFormTemplate">
         <div class="order-form-card" style="padding:12px;border:1px solid #e8e8e8;border-radius:12px;background:#fff;">
-          <p class="order-title">Chon san pham va nhap so luong</p>
+          <p class="order-title">Chọn sản phẩm và nhập số lượng</p>
           <div id="orderRows"></div>
-          <button id="addProductBtn" class="mini-btn" type="button">+ Them san pham</button>
+          <button id="addProductBtn" class="mini-btn" type="button">+ Thêm sản phẩm</button>
           <div class="form-actions" style="margin-top:12px;">
-            <button id="submitOrderBtn" class="primary-btn" type="button">Xac nhan dat hang</button>
+            <button id="submitOrderBtn" class="primary-btn" type="button">Xác nhận đặt hàng</button>
           </div>
         </div>
       </template>
@@ -348,10 +340,10 @@
         const data = await resp.json();
         // fallback products
         const products = [
-          { name: 'Xi Mang PCB30' },
-          { name: 'Xi Mang PCB40' },
-          { name: 'Xi Mang Xay Trat' },
-          { name: 'Gach khong nung' }
+          { name: 'Xi Măng PCB30' },
+          { name: 'Xi Măng PCB40' },
+          { name: 'Xi ăng Xay Trat' },
+          { name: 'Gạch không nung' }
         ];
 
         orderRows.appendChild(createOrderRow(products));
