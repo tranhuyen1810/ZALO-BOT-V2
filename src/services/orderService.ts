@@ -67,9 +67,51 @@ export class OrderService {
         return { text: "Đơn vị không hợp lệ. Vui lòng nhập một trong: bao, tấn, viên." };
       }
 
+      // add current item to draft.items
       session.draft.unit = unit;
-      session.step = "ORDER_PHONE";
-      return { text: "Vui lòng nhập số điện thoại liên hệ." };
+      const item = {
+        product: String(session.draft.product),
+        quantity: Number(session.draft.quantity),
+        unit: String(session.draft.unit)
+      };
+
+      if (!Array.isArray(session.draft.items)) {
+        session.draft.items = [];
+      }
+      session.draft.items.push(item);
+
+      session.step = "ORDER_AFTER_ITEM";
+      return {
+        text: "Đã thêm sản phẩm vào giỏ. Bạn muốn thêm sản phẩm khác hay tiếp tục đến thông tin liên hệ?",
+        quickReplies: [
+          { id: "add_more", title: "Thêm sản phẩm" },
+          { id: "to_contact", title: "Nhập thông tin liên hệ" }
+        ]
+      };
+    }
+
+    if (session.step === "ORDER_AFTER_ITEM") {
+      const normalized = normalizeInput(text);
+      if (normalized.includes("thêm") || normalized.includes("them") || normalized.includes("add") || normalized === "1") {
+        session.step = "ORDER_PRODUCT";
+        return {
+          text: "Vui lòng chọn sản phẩm tiếp theo:",
+          quickReplies: this.store.readProducts().map((p) => ({ id: `product_${p.id}`, title: p.name }))
+        };
+      }
+
+      if (normalized.includes("liên hệ") || normalized.includes("nhập") || normalized.includes("tiếp") || normalized.includes("contact") || normalized === "2") {
+        session.step = "ORDER_PHONE";
+        return { text: "Vui lòng nhập số điện thoại liên hệ." };
+      }
+
+      return {
+        text: "Vui lòng chọn 'Thêm sản phẩm' hoặc 'Nhập thông tin liên hệ'.",
+        quickReplies: [
+          { id: "add_more", title: "Thêm sản phẩm" },
+          { id: "to_contact", title: "Nhập thông tin liên hệ" }
+        ]
+      };
     }
 
     if (session.step === "ORDER_PHONE") {

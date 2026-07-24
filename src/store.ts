@@ -14,7 +14,8 @@ export type SessionStep =
   | "ORDER_CONFIRM"
   | "CREDIT_MENU"
   | "CREDIT_PHONE"
-  | "TRACKING_ORDER_ID";
+  | "TRACKING_ORDER_ID"
+  | "ORDER_AFTER_ITEM";
 
 export interface SessionState {
   userId: string;
