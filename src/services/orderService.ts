@@ -1,5 +1,6 @@
 import { BotMessage } from "../zalo/types";
 import { JsonStore, Order, SessionState } from "../store";
+import { mainMenuButtons } from "../utils/keyboard";
 import { nowIso, normalizeInput } from "../utils/format";
 
 const allowedUnits = ["bao", "tấn", "viên"];
@@ -11,13 +12,19 @@ export class OrderService {
     session.step = "ORDER_PRODUCT";
     session.draft = {};
 
-    const products = this.store.readProducts().map((p) => `- ${p.name}`).join("\n");
+    const products = this.store.readProducts();
+    const productList = products.map((p) => `- ${p.name}`).join("\n");
+    const productButtons = products.map((product) => ({
+      id: `product_${product.id}`,
+      title: product.name
+    }));
 
     return {
       text:
         "Quý khách vui lòng chọn loại sản phẩm cần đặt:\n" +
-        `${products}\n\n` +
-        "Vui lòng nhập đúng tên sản phẩm."
+        `${productList}\n\n` +
+        "Vui lòng chọn hoặc nhập tên sản phẩm.",
+      quickReplies: productButtons
     };
   }
 
@@ -25,7 +32,14 @@ export class OrderService {
     if (session.step === "ORDER_PRODUCT") {
       const selected = this.matchProduct(text);
       if (!selected) {
-        return { text: "Không tìm thấy sản phẩm phù hợp. Vui lòng nhập lại tên sản phẩm." };
+        const products = this.store.readProducts();
+        return {
+          text: "Không tìm thấy sản phẩm phù hợp. Vui lòng chọn lại hoặc nhập tên sản phẩm.",
+          quickReplies: products.map((product) => ({
+            id: `product_${product.id}`,
+            title: product.name
+          }))
+        };
       }
 
       session.draft.product = selected.name;
@@ -41,7 +55,10 @@ export class OrderService {
 
       session.draft.quantity = quantity;
       session.step = "ORDER_UNIT";
-      return { text: "Vui lòng nhập đơn vị: bao | tấn | viên." };
+      return {
+        text: "Vui lòng chọn đơn vị:",
+        quickReplies: allowedUnits.map((unit) => ({ id: `unit_${unit}`, title: unit }))
+      };
     }
 
     if (session.step === "ORDER_UNIT") {
@@ -83,7 +100,8 @@ export class OrderService {
           `Sản phẩm: ${order.product}\n` +
           `Số lượng: ${order.quantity} ${order.unit}\n` +
           `Địa chỉ: ${order.address}\n` +
-          "Phòng Kinh doanh sẽ liên hệ xác nhận trong ít phút."
+          "Phòng Kinh doanh sẽ liên hệ xác nhận trong ít phút.",
+        quickReplies: mainMenuButtons
       };
     }
 

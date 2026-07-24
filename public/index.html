@@ -73,6 +73,23 @@
         background: #fff;
       }
 
+      .fixed-actions {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        padding: 0 20px 18px;
+      }
+
+      .fixed-actions button {
+        border: 1px solid var(--brand-2);
+        background: #fff;
+        color: var(--brand-1);
+        padding: 10px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
       .hero h2 {
         margin: 0 0 8px;
         font-size: 1rem;
@@ -192,6 +209,12 @@
       <section class="hero">
         <h2>Telegram & Web demo</h2>
         <p>Tìm kiếm bot trên Telegram với tên @XiMangAIbot, nhấn Start và gửi câu hỏi trực tiếp. Bạn cũng có thể thử trên giao diện web demo này.</p>
+        <div class="fixed-actions">
+          <button type="button" id="startButton">Start</button>
+          <button type="button" id="orderButton">📝 Đặt hàng</button>
+          <button type="button" id="creditButton">🤝 Tư vấn Sỉ & Công nợ</button>
+          <button type="button" id="trackingButton">🚚 Theo dõi vận chuyển</button>
+        </div>
       </section>
 
       <section id="messages" class="messages"></section>
@@ -247,6 +270,11 @@
         const data = await response.json();
         appendMessage(data.text, "bot", data.quickReplies || []);
       }
+
+      document.getElementById("startButton").addEventListener("click", () => sendMessage("/start"));
+      document.getElementById("orderButton").addEventListener("click", () => sendMessage("đặt hàng"));
+      document.getElementById("creditButton").addEventListener("click", () => sendMessage("tư vấn sỉ"));
+      document.getElementById("trackingButton").addEventListener("click", () => sendMessage("theo dõi vận chuyển"));
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
