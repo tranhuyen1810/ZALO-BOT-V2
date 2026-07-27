@@ -176,7 +176,13 @@ export class OrderService {
         return { text: "Không thể cập nhật sản phẩm này. Vui lòng thử lại." };
       }
 
-      const allowedUnits = this.getAllowedUnits({ draft: { product: target.product } } as SessionState);
+      const allowedUnits = this.getAllowedUnits({
+        draft: { product: target.product },
+        userId: session.userId,
+        userName: session.userName,
+        step: session.step,
+        updatedAt: session.updatedAt
+      } as SessionState);
       if (!allowedUnits.includes(unit)) {
         return { text: `Đơn vị không hợp lệ. Vui lòng chọn một trong: ${allowedUnits.join(", ")}.` };
       }
@@ -236,6 +242,30 @@ export class OrderService {
     }
 
     if (session.step === "ORDER_NOTE") {
+      const normalizedNote = normalizeInput(text);
+      if (normalizedNote.includes("bỏ qua") || normalizedNote.includes("bo qua") || normalizedNote.includes("không") || normalizedNote.includes("khong") || normalizedNote.includes("skip")) {
+        session.draft.note = "";
+        session.step = "ORDER_CONFIRM";
+        return {
+          text: `${this.formatOrderSummary(session)}\n\nChọn 'Xác nhận đặt hàng' để hoàn thành hoặc 'Hủy đơn' để bỏ qua.`,
+          quickReplies: [
+            { id: "order_confirm", title: "Xác nhận đặt hàng" },
+            { id: "order_cancel", title: "Hủy đơn" }
+          ]
+        };
+      }
+
+      if (normalizedNote.includes("xác nhận") || normalizedNote.includes("xac nhan") || normalizedNote.includes("confirm")) {
+        session.step = "ORDER_CONFIRM";
+        return {
+          text: `${this.formatOrderSummary(session)}\n\nChọn 'Xác nhận đặt hàng' để hoàn thành hoặc 'Hủy đơn' để bỏ qua.`,
+          quickReplies: [
+            { id: "order_confirm", title: "Xác nhận đặt hàng" },
+            { id: "order_cancel", title: "Hủy đơn" }
+          ]
+        };
+      }
+
       const note = this.sanitizeNote(text);
       if (note.length > 0) {
         session.draft.note = note;

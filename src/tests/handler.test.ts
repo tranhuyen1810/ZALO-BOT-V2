@@ -60,6 +60,9 @@ describe("MessageHandler", () => {
     expect(response.text).toContain("Vui lòng nhập địa chỉ");
 
     response = handler.handle({ user: user.user, text: "123 Đường A, Hà Nội" });
+    expect(response.text).toContain("Vui lòng nhập ghi chú");
+
+    response = handler.handle({ user: user.user, text: "bỏ qua" });
     expect(response.text).toContain("Thông tin đơn hàng hiện tại");
 
     response = handler.handle({ user: user.user, text: "xác nhận đặt hàng" });

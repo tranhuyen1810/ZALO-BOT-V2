@@ -36,9 +36,13 @@ export class MessageHandler {
         "ORDER_UNIT",
         "ORDER_PHONE",
         "ORDER_ADDRESS",
+        "ORDER_NOTE",
         "ORDER_CONFIRM",
         "ORDER_AFTER_ITEM",
-        "ORDER_EDIT_ITEM"
+        "ORDER_EDIT_ITEM",
+        "ORDER_EDIT_ITEM_QUANTITY",
+        "ORDER_EDIT_ITEM_UNIT",
+        "ORDER_DELETE_ITEM"
       ].includes(session.step)
     ) {
       const response = this.orderService.handleOrderStep(session, message.text);

@@ -93,5 +93,86 @@
     },
     "status": "NEW",
     "createdAt": "2026-07-27T03:56:14.787Z"
+  },
+  {
+    "orderId": "TSHT-20260727-06",
+    "customerZaloId": "test-user-edit",
+    "customerName": "Test",
+    "phone": "0123456789",
+    "product": "Xi Măng PCB30 Tiên Sơn Hà Tây (20 tấn)",
+    "quantity": 20,
+    "unit": "tấn",
+    "address": "123 Đường A, Hà Nội",
+    "notes": "Ghi chú cho đơn hàng",
+    "items": [
+      {
+        "product": "Xi Măng PCB30 Tiên Sơn Hà Tây",
+        "quantity": 20,
+        "unit": "tấn"
+      }
+    ],
+    "deliveryInfo": {
+      "vehicleType": "Xe cẩu",
+      "licensePlate": "29C-123.45",
+      "driverName": "Nguyễn Văn B",
+      "driverPhone": "0912345678",
+      "estimatedArrival": "2026-07-27T03:59:17.490Z"
+    },
+    "status": "NEW",
+    "createdAt": "2026-07-27T03:59:17.490Z"
+  },
+  {
+    "orderId": "TSHT-20260727-07",
+    "customerZaloId": "test-user-6",
+    "customerName": "Test",
+    "phone": "0123456789",
+    "product": "Xi Măng PCB30 Tiên Sơn Hà Tây (10 bao)",
+    "quantity": 10,
+    "unit": "bao",
+    "address": "123 Đường A, Hà Nội",
+    "notes": "",
+    "items": [
+      {
+        "product": "Xi Măng PCB30 Tiên Sơn Hà Tây",
+        "quantity": 10,
+        "unit": "bao"
+      }
+    ],
+    "deliveryInfo": {
+      "vehicleType": "Xe cẩu",
+      "licensePlate": "29C-123.45",
+      "driverName": "Nguyễn Văn B",
+      "driverPhone": "0912345678",
+      "estimatedArrival": "2026-07-27T03:59:54.029Z"
+    },
+    "status": "NEW",
+    "createdAt": "2026-07-27T03:59:54.029Z"
+  },
+  {
+    "orderId": "TSHT-20260727-08",
+    "customerZaloId": "test-user-edit",
+    "customerName": "Test",
+    "phone": "0123456789",
+    "product": "Xi Măng PCB30 Tiên Sơn Hà Tây (20 tấn)",
+    "quantity": 20,
+    "unit": "tấn",
+    "address": "123 Đường A, Hà Nội",
+    "notes": "Ghi chú cho đơn hàng",
+    "items": [
+      {
+        "product": "Xi Măng PCB30 Tiên Sơn Hà Tây",
+        "quantity": 20,
+        "unit": "tấn"
+      }
+    ],
+    "deliveryInfo": {
+      "vehicleType": "Xe cẩu",
+      "licensePlate": "29C-123.45",
+      "driverName": "Nguyễn Văn B",
+      "driverPhone": "0912345678",
+      "estimatedArrival": "2026-07-27T03:59:54.041Z"
+    },
+    "status": "NEW",
+    "createdAt": "2026-07-27T03:59:54.041Z"
   }
 ]
