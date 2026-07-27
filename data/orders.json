@@ -74,5 +74,24 @@
     },
     "status": "NEW",
     "createdAt": "2026-07-27T02:26:44.767Z"
+  },
+  {
+    "orderId": "TSHT-20260727-05",
+    "customerZaloId": "test-user-6",
+    "customerName": "Test",
+    "phone": "0123456789",
+    "product": "Xi Măng PCB30 Tiên Sơn Hà Tây (10 bao)",
+    "quantity": 10,
+    "unit": "bao",
+    "address": "123 Đường A, Hà Nội",
+    "deliveryInfo": {
+      "vehicleType": "Xe cẩu",
+      "licensePlate": "29C-123.45",
+      "driverName": "Nguyễn Văn B",
+      "driverPhone": "0912345678",
+      "estimatedArrival": "2026-07-27T03:56:14.787Z"
+    },
+    "status": "NEW",
+    "createdAt": "2026-07-27T03:56:14.787Z"
   }
 ]

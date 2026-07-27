@@ -61,12 +61,13 @@ app.get("/api/products", (_req: Request, res: Response) => {
 });
 
 app.post("/api/order", (req: Request, res: Response) => {
-  const { userId, userName, items, phone, address } = req.body as {
+  const { userId, userName, items, phone, address, notes } = req.body as {
     userId?: string;
     userName?: string;
     items?: Array<{ product: string; quantity: number; unit: string }>;
     phone?: string;
     address?: string;
+    notes?: string;
   };
 
   if (!items || !Array.isArray(items) || items.length === 0) {
@@ -81,7 +82,8 @@ app.post("/api/order", (req: Request, res: Response) => {
     userName: userName?.trim() || "Khách Web",
     items,
     phone: phone ?? "",
-    address: address ?? ""
+    address: address ?? "",
+    notes: notes ?? ""
   });
   // Try to notify admin Telegram chat if token and chat id provided and token looks set
   try {
@@ -98,7 +100,7 @@ app.post("/api/order", (req: Request, res: Response) => {
 
   res.json({
     text:
-      `Đã tạo đơn hàng thành công: ${order.orderId}\nSản phẩm: ${order.product}\nĐịa chỉ: ${order.address}`
+      `Đã tạo đơn hàng thành công: ${order.orderId}\nSản phẩm: ${order.product}\nĐịa chỉ: ${order.address}\n${order.notes ? `Ghi chú: ${order.notes}` : ""}`
   });
 });
 

@@ -66,6 +66,49 @@ describe("MessageHandler", () => {
     expect(response.text).toContain("Đã tạo đơn hàng thành công");
   });
 
+  it("supports editing and deleting items before confirmation", () => {
+    const handler = new MessageHandler();
+    const user = { user: { id: "test-user-edit", name: "Test" }, text: "đặt hàng" };
+    let response = handler.handle(user);
+    expect(response.text).toContain("vui lòng chọn loại sản phẩm");
+
+    response = handler.handle({ user: user.user, text: "Xi Măng PCB30" });
+    response = handler.handle({ user: user.user, text: "10" });
+    response = handler.handle({ user: user.user, text: "bao" });
+    expect(response.text).toContain("Đã thêm");
+
+    response = handler.handle({ user: user.user, text: "thêm sản phẩm" });
+    response = handler.handle({ user: user.user, text: "Gạch Không Nung Tiên Sơn Hà Tây" });
+    response = handler.handle({ user: user.user, text: "50" });
+    response = handler.handle({ user: user.user, text: "viên" });
+    expect(response.text).toContain("Đã thêm");
+
+    response = handler.handle({ user: user.user, text: "sửa sản phẩm" });
+    expect(response.text).toContain("Nhập số thứ tự");
+
+    response = handler.handle({ user: user.user, text: "1" });
+    expect(response.text).toContain("Nhập số lượng mới");
+
+    response = handler.handle({ user: user.user, text: "20" });
+    expect(response.text).toContain("Nhập đơn vị mới");
+
+    response = handler.handle({ user: user.user, text: "tấn" });
+    expect(response.text).toContain("Đã cập nhật");
+
+    response = handler.handle({ user: user.user, text: "xóa sản phẩm" });
+    expect(response.text).toContain("Nhập số thứ tự");
+
+    response = handler.handle({ user: user.user, text: "2" });
+    expect(response.text).toContain("Đã xóa");
+
+    response = handler.handle({ user: user.user, text: "nhập thông tin liên hệ" });
+    response = handler.handle({ user: user.user, text: "0123456789" });
+    response = handler.handle({ user: user.user, text: "123 Đường A, Hà Nội" });
+    response = handler.handle({ user: user.user, text: "Ghi chú cho đơn hàng" });
+    response = handler.handle({ user: user.user, text: "xác nhận đặt hàng" });
+    expect(response.text).toContain("Đã tạo đơn hàng thành công");
+  });
+
   it("handles telegram-style commands", () => {
     const handler = new MessageHandler();
     const startResponse = handler.handle({ user: { id: "test-user-4", name: "Test" }, text: "/start" });

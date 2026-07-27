@@ -11,11 +11,16 @@ export type SessionStep =
   | "ORDER_UNIT"
   | "ORDER_PHONE"
   | "ORDER_ADDRESS"
+  | "ORDER_NOTE"
   | "ORDER_CONFIRM"
   | "CREDIT_MENU"
   | "CREDIT_PHONE"
   | "TRACKING_ORDER_ID"
-  | "ORDER_AFTER_ITEM";
+  | "ORDER_AFTER_ITEM"
+  | "ORDER_EDIT_ITEM"
+  | "ORDER_EDIT_ITEM_QUANTITY"
+  | "ORDER_EDIT_ITEM_UNIT"
+  | "ORDER_DELETE_ITEM";
 
 export interface SessionState {
   userId: string;
@@ -49,6 +54,8 @@ export interface Order {
   quantity: number;
   unit: string;
   address: string;
+  notes: string;
+  items: Array<{ product: string; quantity: number; unit: string }>;
   deliveryInfo: DeliveryInfo;
   status: "NEW" | "PROCESSING" | "DELIVERING" | "DELIVERED";
   createdAt: string;
