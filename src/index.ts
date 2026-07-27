@@ -55,6 +55,11 @@ app.post("/api/chat/message", (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.get("/api/products", (_req: Request, res: Response) => {
+  const store = new JsonStore();
+  res.json(store.readProducts());
+});
+
 app.post("/api/order", (req: Request, res: Response) => {
   const { userId, userName, items, phone, address } = req.body as {
     userId?: string;

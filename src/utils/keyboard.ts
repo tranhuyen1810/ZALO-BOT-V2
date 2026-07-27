@@ -1,6 +1,7 @@
 import { QuickReplyButton } from "../zalo/types";
 
 export const mainMenuButtons: QuickReplyButton[] = [
+  { id: "price_lookup", title: "💲 Tra cứu bảng giá" },
   { id: "quick_order", title: "📝 Đặt hàng" },
   { id: "wholesale_credit", title: "🤝 Tư vấn Sỉ & Công nợ" },
   { id: "tracking", title: "🚚 Theo dõi vận chuyển" }

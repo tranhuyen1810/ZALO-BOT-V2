@@ -1,9 +1,9 @@
 import { BotMessage } from "../zalo/types";
-import { JsonStore, Order, SessionState } from "../store";
+import { JsonStore, Order, SessionState, Product } from "../store";
 import { mainMenuButtons } from "../utils/keyboard";
 import { nowIso, normalizeInput } from "../utils/format";
 
-const allowedUnits = ["bao", "tấn", "viên"];
+const fallbackUnits = ["bao", "tấn", "viên"];
 
 export class OrderService {
   constructor(private readonly store: JsonStore) {}
@@ -13,18 +13,12 @@ export class OrderService {
     session.draft = {};
 
     const products = this.store.readProducts();
-    const productList = products.map((p) => `- ${p.name}`).join("\n");
-    const productButtons = products.map((product) => ({
-      id: `product_${product.id}`,
-      title: product.name
-    }));
-
     return {
       text:
         "Quý khách vui lòng chọn loại sản phẩm cần đặt:\n" +
-        `${productList}\n\n` +
-        "Vui lòng chọn hoặc nhập tên sản phẩm.",
-      quickReplies: productButtons
+        products.map((p) => `- ${p.name}`).join("\n") +
+        "\n\nVui lòng chọn hoặc nhập tên sản phẩm.",
+      quickReplies: products.map((product) => ({ id: `product_${product.id}`, title: product.name }))
     };
   }
 
@@ -35,16 +29,13 @@ export class OrderService {
         const products = this.store.readProducts();
         return {
           text: "Không tìm thấy sản phẩm phù hợp. Vui lòng chọn lại hoặc nhập tên sản phẩm.",
-          quickReplies: products.map((product) => ({
-            id: `product_${product.id}`,
-            title: product.name
-          }))
+          quickReplies: products.map((product) => ({ id: `product_${product.id}`, title: product.name }))
         };
       }
 
       session.draft.product = selected.name;
       session.step = "ORDER_QUANTITY";
-      return { text: "Vui lòng nhập số lượng (chỉ nhập số)." };
+      return { text: `Bạn đã chọn ${selected.name}. Vui lòng nhập số lượng (chỉ nhập số).` };
     }
 
     if (session.step === "ORDER_QUANTITY") {
@@ -57,32 +48,35 @@ export class OrderService {
       session.step = "ORDER_UNIT";
       return {
         text: "Vui lòng chọn đơn vị:",
-        quickReplies: allowedUnits.map((unit) => ({ id: `unit_${unit}`, title: unit }))
+        quickReplies: this.getAllowedUnits(session).map((unit) => ({ id: `unit_${unit}`, title: unit }))
       };
     }
 
     if (session.step === "ORDER_UNIT") {
       const unit = normalizeInput(text);
+      const allowedUnits = this.getAllowedUnits(session);
       if (!allowedUnits.includes(unit)) {
-        return { text: "Đơn vị không hợp lệ. Vui lòng nhập một trong: bao, tấn, viên." };
+        return { text: `Đơn vị không hợp lệ. Vui lòng chọn một trong: ${allowedUnits.join(", ")}.` };
       }
 
-      // add current item to draft.items
-      session.draft.unit = unit;
       const item = {
         product: String(session.draft.product),
         quantity: Number(session.draft.quantity),
-        unit: String(session.draft.unit)
+        unit
       };
 
       if (!Array.isArray(session.draft.items)) {
         session.draft.items = [];
       }
       session.draft.items.push(item);
+      session.draft.product = undefined;
+      session.draft.quantity = undefined;
+      session.draft.unit = undefined;
 
       session.step = "ORDER_AFTER_ITEM";
       return {
-        text: "Đã thêm sản phẩm vào giỏ. Bạn muốn thêm sản phẩm khác hay tiếp tục đến thông tin liên hệ?",
+        text:
+          `Đã thêm: ${item.product} - ${item.quantity} ${item.unit}.\nHiện tại đơn hàng có ${session.draft.items.length} mục.`,
         quickReplies: [
           { id: "add_more", title: "Thêm sản phẩm" },
           { id: "to_contact", title: "Nhập thông tin liên hệ" }
@@ -134,13 +128,7 @@ export class OrderService {
       session.draft.address = address;
       session.step = "ORDER_CONFIRM";
       return {
-        text:
-          `Vui lòng kiểm tra lại thông tin đơn hàng và xác nhận:\n` +
-          `Sản phẩm: ${session.draft.product}\n` +
-          `Số lượng: ${session.draft.quantity} ${session.draft.unit}\n` +
-          `SĐT: ${session.draft.phone}\n` +
-          `Địa chỉ: ${session.draft.address}\n\n` +
-          "Chọn 'Xác nhận đặt hàng' để hoàn thành hoặc 'Hủy đơn' để bỏ qua.",
+        text: `${this.formatOrderSummary(session)}\nChọn 'Xác nhận đặt hàng' để hoàn thành hoặc 'Hủy đơn' để bỏ qua.`,
         quickReplies: [
           { id: "order_confirm", title: "Xác nhận đặt hàng" },
           { id: "order_cancel", title: "Hủy đơn" }
@@ -184,7 +172,24 @@ export class OrderService {
     return { text: "Luồng đặt hàng chưa được khởi tạo. Vui lòng bấm 📝 Đặt hàng." };
   }
 
-  private matchProduct(input: string): { id: string; name: string } | undefined {
+  private getAllowedUnits(session: SessionState): string[] {
+    const product = this.matchProduct(String(session.draft.product));
+    return product?.allowedUnits.length ? product.allowedUnits : fallbackUnits;
+  }
+
+  private formatOrderSummary(session: SessionState): string {
+    const items = Array.isArray(session.draft.items) ? session.draft.items : [];
+    const lines = items.map((item, index) => `${index + 1}. ${item.product} - ${item.quantity} ${item.unit}`);
+    const totalQuantity = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+
+    return (
+      `Thông tin đơn hàng hiện tại:\n${lines.join("\n")}\nTổng số mặt hàng: ${items.length}\nTổng số lượng: ${totalQuantity}` +
+      (session.draft.phone ? `\nSĐT: ${session.draft.phone}` : "") +
+      (session.draft.address ? `\nĐịa chỉ: ${session.draft.address}` : "")
+    );
+  }
+
+  private matchProduct(input: string): Product | undefined {
     const products = this.store.readProducts();
     const normalized = normalizeInput(input);
 
@@ -196,15 +201,18 @@ export class OrderService {
     const next = orders.length + 1;
     const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
     const orderId = `TSHT-${datePart}-${String(next).padStart(2, "0")}`;
+    const items = Array.isArray(session.draft.items) ? session.draft.items : [];
+    const productDesc = items.map((i) => `${i.product} (${i.quantity} ${i.unit})`).join("; ");
+    const totalQuantity = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
 
     const order: Order = {
       orderId,
       customerZaloId: session.userId,
       customerName: session.userName,
       phone: String(session.draft.phone),
-      product: String(session.draft.product),
-      quantity: Number(session.draft.quantity),
-      unit: String(session.draft.unit),
+      product: productDesc,
+      quantity: totalQuantity,
+      unit: items.length === 1 ? String(items[0].unit) : "nhiều",
       address: String(session.draft.address),
       deliveryInfo: {
         vehicleType: "Xe cẩu",
@@ -235,7 +243,7 @@ export class OrderService {
     const orderId = `TSHT-${datePart}-${String(next).padStart(2, "0")}`;
 
     const productDesc = payload.items.map((i) => `${i.product} (${i.quantity} ${i.unit})`).join("; ");
-    const totalQuantity = payload.items.reduce((s, it) => s + Number(it.quantity || 0), 0);
+    const totalQuantity = payload.items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
 
     const order: Order = {
       orderId,

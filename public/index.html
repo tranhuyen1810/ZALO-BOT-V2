@@ -209,6 +209,7 @@
       <section class="hero">
         <div class="fixed-actions">
           <button type="button" id="startButton">Start</button>
+          <button type="button" id="priceButton">💲 Tra cứu bảng giá</button>
           <button type="button" id="orderButton">📝 Đặt hàng</button>
           <button type="button" id="creditButton">🤝 Tư vấn Sỉ & Công nợ</button>
           <button type="button" id="trackingButton">🚚 Theo dõi vận chuyển</button>
@@ -303,6 +304,7 @@
           const opt = document.createElement('option');
           opt.value = p.name;
           opt.textContent = p.name;
+          opt.dataset.units = JSON.stringify(p.allowedUnits || ['bao', 'tấn', 'viên']);
           select.appendChild(opt);
         });
 
@@ -313,8 +315,18 @@
         qty.style.width = '100px';
 
         const unit = document.createElement('select');
-        ['bao','tấn','viên'].forEach(u => {
-          const o = document.createElement('option'); o.value = u; o.textContent = u; unit.appendChild(o);
+        const fillUnits = (units) => {
+          unit.innerHTML = '';
+          units.forEach(u => {
+            const o = document.createElement('option'); o.value = u; o.textContent = u; unit.appendChild(o);
+          });
+        };
+
+        const initialUnits = JSON.parse(select.selectedOptions[0]?.dataset.units || "['bao','tấn','viên']");
+        fillUnits(initialUnits);
+        select.addEventListener('change', () => {
+          const units = JSON.parse(select.selectedOptions[0]?.dataset.units || "['bao','tấn','viên']");
+          fillUnits(units);
         });
 
         const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'X';
@@ -339,12 +351,13 @@
         const resp = await fetch('/api/chat/message', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ userId: 'demo-user', userName: 'Khách Demo', text: 'menu' })});
         const data = await resp.json();
         // fallback products
-        const products = [
-          { name: 'Xi Măng PCB30' },
-          { name: 'Xi Măng PCB40' },
-          { name: 'Xi ăng Xay Trat' },
-          { name: 'Gạch không nung' }
-        ];
+        const respProducts = await fetch('/api/products');
+        const products = await respProducts.json().catch(() => [
+          { name: 'Xi Măng PCB30', allowedUnits: ['bao', 'tấn'] },
+          { name: 'Xi Măng PCB40', allowedUnits: ['bao', 'tấn'] },
+          { name: 'Xi Măng Xây Trát', allowedUnits: ['bao', 'tấn'] },
+          { name: 'Gạch Không Nung', allowedUnits: ['viên'] }
+        ]);
 
         orderRows.appendChild(createOrderRow(products));
 
@@ -383,6 +396,7 @@
         messages.prepend(orderForm);
       }
 
+      document.getElementById('priceButton').addEventListener('click', () => sendMessage('tra cứu bảng giá'));
       orderButton.addEventListener('click', () => {
         // open visual order form
         openOrderForm().catch(console.error);

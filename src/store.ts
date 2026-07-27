@@ -29,6 +29,7 @@ export interface Product {
   id: string;
   name: string;
   allowedUnits: string[];
+  price?: number;
 }
 
 export interface DeliveryInfo {

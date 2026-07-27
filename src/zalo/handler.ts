@@ -29,35 +29,6 @@ export class MessageHandler {
       };
     }
 
-    if (normalized.includes("đặt hàng") || normalized.includes("quick_order") || normalized === "1") {
-      const response = this.orderService.startOrder(session);
-      this.store.saveSession(session);
-      return response;
-    }
-
-    if (
-      normalized.includes("tư vấn") ||
-      normalized.includes("công nợ") ||
-      normalized.includes("wholesale_credit") ||
-      normalized === "2"
-    ) {
-      const response = this.creditService.startConsultation(session);
-      this.store.saveSession(session);
-      return response;
-    }
-
-    if (
-      normalized.includes("theo dõi") ||
-      normalized.includes("tra cứu") ||
-      normalized.includes("tracking") ||
-      normalized === "3"
-    ) {
-      session.step = "TRACKING_ORDER_ID";
-      const response = this.trackingService.askOrderId();
-      this.store.saveSession(session);
-      return response;
-    }
-
     if (
       [
         "ORDER_PRODUCT",
@@ -66,10 +37,64 @@ export class MessageHandler {
         "ORDER_PHONE",
         "ORDER_ADDRESS",
         "ORDER_CONFIRM",
-        "ORDER_AFTER_ITEM"
+        "ORDER_AFTER_ITEM",
+        "ORDER_EDIT_ITEM"
       ].includes(session.step)
     ) {
       const response = this.orderService.handleOrderStep(session, message.text);
+      this.store.saveSession(session);
+      return response;
+    }
+
+    if (normalized.includes("đặt hàng") || normalized.includes("quick_order") || normalized === "1") {
+      const response = this.orderService.startOrder(session);
+      this.store.saveSession(session);
+      return response;
+    }
+
+    if (
+      normalized.includes("bảng giá") ||
+      normalized.includes("giá") ||
+      normalized.includes("price") ||
+      normalized === "2"
+    ) {
+      const products = this.store
+        .readProducts()
+        .map((item) => `• ${item.name}: ${item.price ? item.price.toLocaleString() + " VND" : "Giá tham khảo"}`)
+        .join("\n");
+
+      this.store.saveSession(session);
+      return {
+        text:
+          "Bảng giá tham khảo sản phẩm:\n" +
+          products +
+          "\n\nVui lòng chọn 'Đặt hàng' khi bạn muốn tiếp tục.",
+        quickReplies: [
+          { id: "quick_order", title: "📝 Đặt hàng" },
+          { id: "wholesale_credit", title: "🤝 Tư vấn Sỉ & Công nợ" },
+          { id: "tracking", title: "🚚 Theo dõi vận chuyển" }
+        ]
+      };
+    }
+
+    if (
+      normalized.includes("tư vấn") ||
+      normalized.includes("công nợ") ||
+      normalized.includes("wholesale_credit") ||
+      normalized === "3"
+    ) {
+      const response = this.creditService.startConsultation(session);
+      this.store.saveSession(session);
+      return response;
+    }
+
+    if (
+      normalized.includes("theo dõi") ||
+      normalized.includes("tracking") ||
+      normalized === "4"
+    ) {
+      session.step = "TRACKING_ORDER_ID";
+      const response = this.trackingService.askOrderId();
       this.store.saveSession(session);
       return response;
     }
