@@ -201,5 +201,32 @@
     },
     "status": "NEW",
     "createdAt": "2026-07-27T04:01:31.930Z"
+  },
+  {
+    "orderId": "TSHT-20260727-10",
+    "customerZaloId": "telegram:7190116968",
+    "customerName": "Mia💡",
+    "phone": "",
+    "product": "Xi Măng PCB30 Tiên Sơn Hà Tây (145 bao)",
+    "quantity": 145,
+    "unit": "bao",
+    "address": "",
+    "notes": "Xóa sản phẩm",
+    "items": [
+      {
+        "product": "Xi Măng PCB30 Tiên Sơn Hà Tây",
+        "quantity": 145,
+        "unit": "bao"
+      }
+    ],
+    "deliveryInfo": {
+      "vehicleType": "Xe cẩu",
+      "licensePlate": "29C-123.45",
+      "driverName": "Nguyễn Văn B",
+      "driverPhone": "0912345678",
+      "estimatedArrival": "2026-07-27T04:09:14.695Z"
+    },
+    "status": "NEW",
+    "createdAt": "2026-07-27T04:09:14.695Z"
   }
 ]
