@@ -11,8 +11,8 @@ export class TelegramAdapter {
 
   async start(): Promise<void> {
     const token = config.telegram.botToken?.trim();
-    if (!token) {
-      console.log("Telegram bot token chưa được cấu hình. Bỏ qua tích hợp Telegram.");
+    if (!token || token.includes("your_") || token.includes("your-bot") || token.toLowerCase().includes("example")) {
+      console.log("Telegram bot token chưa được cấu hình hoặc là placeholder. Bỏ qua tích hợp Telegram.");
       return;
     }
 

@@ -4,3 +4,5 @@
 2026-07-27T03:59:54.033Z INFO order_created {"orderId":"TSHT-20260727-07","userId":"test-user-6","itemCount":1,"note":""}
 2026-07-27T03:59:54.042Z INFO admin_notification_skipped {"orderId":"TSHT-20260727-08"}
 2026-07-27T03:59:54.042Z INFO order_created {"orderId":"TSHT-20260727-08","userId":"test-user-edit","itemCount":1,"note":"Ghi chú cho đơn hàng"}
+2026-07-27T04:01:31.930Z INFO admin_notification_skipped {"orderId":"TSHT-20260727-09"}
+2026-07-27T04:01:31.930Z INFO order_created_web {"orderId":"TSHT-20260727-09","userId":"web-user","itemCount":1}
