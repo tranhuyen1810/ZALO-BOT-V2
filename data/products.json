@@ -1,22 +1,22 @@
 [
   {
     "id": "pcb30",
-    "name": "Xi Măng PCB30 Tiên Sơn Hà Tây",
+    "name": "Xi Măng PCB30 Tiên Sơn",
     "allowedUnits": ["bao", "tấn"]
   },
   {
     "id": "pcb40",
-    "name": "Xi Măng PCB40 Tiên Sơn Hà Tây",
+    "name": "Xi Măng PCB40 Tiên Sơn",
     "allowedUnits": ["bao", "tấn"]
   },
   {
     "id": "xaytrat",
-    "name": "Xi Măng Xây Trát Tiên Sơn Hà Tây",
+    "name": "Xi Măng Xây Trát Tiên Sơn",
     "allowedUnits": ["bao", "tấn"]
   },
   {
     "id": "gach-khong-nung",
-    "name": "Gạch Không Nung Tiên Sơn Hà Tây",
+    "name": "Gạch Không Nung Tiên Sơn",
     "allowedUnits": ["viên"]
   }
 ]
